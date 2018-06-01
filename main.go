@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"html/template"
+	"os"
 )
 
 type beauty struct{
@@ -29,12 +30,20 @@ func beautiful(w http.ResponseWriter, r *http.Request){
 	t.Execute(w,p)
 }
 
+func getPort() string {
+	p := os.Getenv("PORT")
+	if p != "" {
+		return ":" + p
+	}
+	return ":8080"
+}
+
 func main() {
 	http.HandleFunc("/", beautiful)
 	http.HandleFunc("/agg/", beautify)
 	http.HandleFunc("/ban/", beautiful)
 	http.Handle("/images/", http.StripPrefix("/images/", http.FileServer(http.Dir("images/"))))
-    http.ListenAndServe(":8080", nil)
+    http.ListenAndServe(getPort(), nil)
 
 }
 
